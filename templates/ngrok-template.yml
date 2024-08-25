@@ -1,0 +1,6 @@
+version: "2"
+authtoken: '${NGROK_AUTH_TOKEN}'
+tunnels:
+  jenkins:
+    addr: http://jenkins:8080
+    proto: http
