@@ -17,6 +17,7 @@ services:
       interval: 30s # Run the health check every 30 seconds.
       timeout: 10s # Consider the check failed if it takes longer than 10 seconds.
       retries: 10 # Retry up to 10 times before marking the container as unhealthy.
+      start_period: 60s # Wait 60 seconds before starting health checks (allows initialization)
 
   prometheus: # Define a service named 'prometheus' in the Docker Compose configuration.
     image: prom/prometheus # Use the official Prometheus image from Docker Hub.
@@ -53,11 +54,12 @@ services:
     volumes: # Bind mount host directories to persist Jenkins data.
       - ./jenkins/data:/var/jenkins_home # Store Jenkins data (jobs, configurations, plugins) on the host for persistence across restarts.
 
-  ngrok: # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
-    image: ngrok/ngrok:latest # Use the official Ngrok image with the latest version.
-    container_name: ngrok # Name the container 'ngrok' for easy management and identification.
-    depends_on: # Define service dependencies for Ngrok.
-      - jenkins # Ensure that the 'ngrok' service starts only after Jenkins is running.
-    command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout" # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
-    volumes: # Bind mount host directories to provide Ngrok configuration files.
-      - ./ngrok/config:/ngrok/config # Map the './ngrok/config' directory on the host to the configuration directory inside the container.
+
+  # ngrok: # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
+  #   image: ngrok/ngrok:latest # Use the official Ngrok image with the latest version.
+  #   container_name: ngrok # Name the container 'ngrok' for easy management and identification.
+  #   depends_on: # Define service dependencies for Ngrok.
+  #     - jenkins # Ensure that the 'ngrok' service starts only after Jenkins is running.
+  #   command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout" # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
+  #   volumes: # Bind mount host directories to provide Ngrok configuration files.
+  #     - ./ngrok/config:/ngrok/config # Map the './ngrok/config' directory on the host to the configuration directory inside the container.
