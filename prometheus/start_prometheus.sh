@@ -5,7 +5,7 @@ SONARQUBE_URL="http://${SONARQUBE_USER}:${SONARQUBE_OLD_PASSWORD}@${SONARQUBE_HO
 
 # Espera 1 minuto antes de ejecutar el comando wget
 echo "Esperando 1 minuto antes de cambiar la contraseña de SonarQube..."
-sleep 60
+sleep 120
 
 # Ejecuta el comando wget para cambiar la contraseña de SonarQube
 wget_output=$(wget --post-data='' "$SONARQUBE_URL" -O - 2>&1)
