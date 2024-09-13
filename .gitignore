@@ -1,0 +1,38 @@
+# Ignorar todo por defecto
+*
+
+# Excepciones para los archivos y carpetas que quieres rastrear
+
+# Jenkins plugin
+!jenkins/
+!jenkins/data/
+!jenkins/data/plugins/
+!jenkins/data/plugins/build-token-root.hpi
+
+# Prometheus script
+!prometheus/
+!prometheus/start_prometheus.sh
+
+# SonarQube plugin and script
+!sonarqube/
+!sonarqube/extensions/
+!sonarqube/extensions/plugins/
+!sonarqube/extensions/plugins/sonar-prometheus-exporter-1.0.0-SNAPSHOT.jar
+!sonarqube/check_sonarqube_health.sh
+
+# Template files
+!templates/
+!templates/ngrok-template.yml
+!templates/prometheus-template.yml
+
+# Docker environment and essential files
+!.env
+!readme.md
+!config_mappings.config
+!generate_config.sh
+!docker-compose.yml
+!start-services.sh
+!.gitignore
+
+# Asegurar que no se ignoren los directorios vacíos en los que hay archivos rastreados
+!*/
