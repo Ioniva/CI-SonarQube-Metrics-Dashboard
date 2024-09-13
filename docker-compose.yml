@@ -1,64 +1,63 @@
 services:
-  sonarqube:                        # Define a service named 'sonarqube' in the Docker Compose configuration.
-    image: sonarqube:lts            # Use the official SonarQube image with the latest LTS (Long-Term Support) version.
-    container_name: sonarqube       # Name the container 'sonarqube' for easier reference.
+  sonarqube: # Define a service named 'sonarqube' in the Docker Compose configuration.
+    image: sonarqube:lts # Use the official SonarQube image with the latest LTS (Long-Term Support) version.
+    container_name: sonarqube # Name the container 'sonarqube' for easier reference.
     ports:
-      - "9000:9000"                 # Map port 9000 on the host to port 9000 in the container (SonarQube UI is accessible on http://localhost:9000).
+      - "9000:9000" # Map port 9000 on the host to port 9000 in the container (SonarQube UI is accessible on http://localhost:9000).
     environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true  # Disable Elasticsearch bootstrap checks, useful in non-production environments.
-    volumes:                        # Bind mount host directories to persist SonarQube data and configuration.
-      - ./sonarqube/conf:/opt/sonarqube/conf          # Map the './sonarqube/conf' directory on the host to the configuration directory inside the container.
-      - ./sonarqube/data:/opt/sonarqube/data          # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).
-      - ./sonarqube/logs:/opt/sonarqube/logs          # Map the './sonarqube/logs' directory on the host to store logs.
-      - ./sonarqube/extensions:/opt/sonarqube/extensions  # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
-      - ./sonarqube/check_sonarqube_health.sh:/opt/sonarqube/check_sonarqube_health.sh  # Map a custom health check script from the host to the container.
-    healthcheck:                      # Configure a health check for the SonarQube service.
-      test: ["CMD-SHELL", "/opt/sonarqube/check_sonarqube_health.sh"]  # Run the custom health check script inside the container.
-      interval: 30s                   # Run the health check every 30 seconds.
-      timeout: 10s                    # Consider the check failed if it takes longer than 10 seconds.
-      retries: 10                     # Retry up to 10 times before marking the container as unhealthy.
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true # Disable Elasticsearch bootstrap checks, useful in non-production environments.
+    volumes: # Bind mount host directories to persist SonarQube data and configuration.
+      - ./sonarqube/conf:/opt/sonarqube/conf # Map the './sonarqube/conf' directory on the host to the configuration directory inside the container.
+      - ./sonarqube/data:/opt/sonarqube/data # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).
+      - ./sonarqube/logs:/opt/sonarqube/logs # Map the './sonarqube/logs' directory on the host to store logs.
+      - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
+      - ./sonarqube/check_sonarqube_health.sh:/opt/sonarqube/check_sonarqube_health.sh # Map a custom health check script from the host to the container.
+    healthcheck: # Configure a health check for the SonarQube service.
+      test: ["CMD-SHELL", "/bin/bash", "-c", "/opt/sonarqube/check_sonarqube_health.sh"] # Run the custom health check script inside the container.
+      interval: 30s # Run the health check every 30 seconds.
+      timeout: 10s # Consider the check failed if it takes longer than 10 seconds.
+      retries: 10 # Retry up to 10 times before marking the container as unhealthy.
 
-  prometheus:                       # Define a service named 'prometheus' in the Docker Compose configuration.
-    image: prom/prometheus          # Use the official Prometheus image from Docker Hub.
-    container_name: prometheus      # Name the container 'prometheus' for easier management and identification.
+  prometheus: # Define a service named 'prometheus' in the Docker Compose configuration.
+    image: prom/prometheus # Use the official Prometheus image from Docker Hub.
+    container_name: prometheus # Name the container 'prometheus' for easier management and identification.
     ports:
-      - "9090:9090"                 # Map port 9090 on the host to port 9090 in the container (Prometheus web UI accessible on http://localhost:9090).
-    volumes:                        # Bind mount host directories to persist Prometheus data and configuration.
-      - ./prometheus/data:/prometheus                            # Store Prometheus data on the host to retain metrics data between restarts.
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Map the Prometheus configuration file from the host to the container.
-      - ./prometheus/start_prometheus.sh:/start_prometheus.sh    # Map a custom startup script from the host to the container.
+      - "9090:9090" # Map port 9090 on the host to port 9090 in the container (Prometheus web UI accessible on http://localhost:9090).
+    volumes: # Bind mount host directories to persist Prometheus data and configuration.
+      - ./prometheus/data:/prometheus # Store Prometheus data on the host to retain metrics data between restarts.
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Map the Prometheus configuration file from the host to the container.
+      - ./prometheus/start_prometheus.sh:/start_prometheus.sh # Map a custom startup script from the host to the container.
     env_file:
       - ./.env
-    depends_on:                     # Define service dependencies for Prometheus.
-      sonarqube:                    # Specify that Prometheus depends on the 'sonarqube' service.
-        condition: service_healthy  # Ensure that Prometheus only starts after SonarQube is healthy.
-    entrypoint: ["/bin/sh", "/start_prometheus.sh"]  # Override the default entrypoint with a custom script that runs Prometheus.
+    depends_on: # Define service dependencies for Prometheus.
+      sonarqube: # Specify that Prometheus depends on the 'sonarqube' service.
+        condition: service_healthy # Ensure that Prometheus only starts after SonarQube is healthy.
+    entrypoint: ["/bin/sh", "/start_prometheus.sh"] # Override the default entrypoint with a custom script that runs Prometheus.
 
-  grafana:                         # Define a service named 'grafana' in the Docker Compose configuration.
-    image: grafana/grafana         # Use the official Grafana image from Docker Hub.
-    container_name: grafana        # Name the container 'grafana' for easy management and identification.
+  grafana: # Define a service named 'grafana' in the Docker Compose configuration.
+    image: grafana/grafana # Use the official Grafana image from Docker Hub.
+    container_name: grafana # Name the container 'grafana' for easy management and identification.
     ports:
-      - "3000:3000"                # Map port 3000 on the host to port 3000 in the container (Grafana web UI accessible on http://localhost:3000).
-    environment:                   # Set environment variables for Grafana.
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource  # Automatically install specified Grafana plugins on startup.
-    volumes:                       # Bind mount host directories to persist Grafana data.
-      - ./grafana/data:/var/lib/grafana  # Store Grafana data (e.g., dashboards, settings) on the host to ensure persistence between restarts.
+      - "3000:3000" # Map port 3000 on the host to port 3000 in the container (Grafana web UI accessible on http://localhost:3000).
+    environment: # Set environment variables for Grafana.
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource # Automatically install specified Grafana plugins on startup.
+    volumes: # Bind mount host directories to persist Grafana data.
+      - ./grafana/data:/var/lib/grafana # Store Grafana data (e.g., dashboards, settings) on the host to ensure persistence between restarts.
 
-  jenkins:                         # Define a service named 'jenkins' in the Docker Compose configuration.
-    image: jenkins/jenkins:lts     # Use the official Jenkins image with the latest Long-Term Support (LTS) version.
-    container_name: jenkins        # Name the container 'jenkins' for easy management and identification.
+  jenkins: # Define a service named 'jenkins' in the Docker Compose configuration.
+    image: jenkins/jenkins:lts # Use the official Jenkins image with the latest Long-Term Support (LTS) version.
+    container_name: jenkins # Name the container 'jenkins' for easy management and identification.
     ports:
-      - "8080:8080"                # Map port 8080 on the host to port 8080 in the container (Jenkins web UI accessible on http://localhost:8080).
-      - "50000:50000"              # Map port 50000 on the host to port 50000 in the container (used for Jenkins agent communication).
-    volumes:                       # Bind mount host directories to persist Jenkins data.
-      - ./jenkins/data:/var/jenkins_home  # Store Jenkins data (jobs, configurations, plugins) on the host for persistence across restarts.
+      - "8080:8080" # Map port 8080 on the host to port 8080 in the container (Jenkins web UI accessible on http://localhost:8080).
+      - "50000:50000" # Map port 50000 on the host to port 50000 in the container (used for Jenkins agent communication).
+    volumes: # Bind mount host directories to persist Jenkins data.
+      - ./jenkins/data:/var/jenkins_home # Store Jenkins data (jobs, configurations, plugins) on the host for persistence across restarts.
 
-  ngrok:                           # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
-    image: ngrok/ngrok:latest      # Use the official Ngrok image with the latest version.
-    container_name: ngrok          # Name the container 'ngrok' for easy management and identification.
-    depends_on:                    # Define service dependencies for Ngrok.
-      - jenkins                    # Ensure that the 'ngrok' service starts only after Jenkins is running.
-    command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout"  # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
-    volumes:                       # Bind mount host directories to provide Ngrok configuration files.
-      - ./ngrok/config:/ngrok/config  # Map the './ngrok/config' directory on the host to the configuration directory inside the container.
-
+  ngrok: # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
+    image: ngrok/ngrok:latest # Use the official Ngrok image with the latest version.
+    container_name: ngrok # Name the container 'ngrok' for easy management and identification.
+    depends_on: # Define service dependencies for Ngrok.
+      - jenkins # Ensure that the 'ngrok' service starts only after Jenkins is running.
+    command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout" # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
+    volumes: # Bind mount host directories to provide Ngrok configuration files.
+      - ./ngrok/config:/ngrok/config # Map the './ngrok/config' directory on the host to the configuration directory inside the container.
