@@ -32,6 +32,7 @@
 !generate_config.sh
 !docker-compose.yml
 !start-services.sh
+!.gitattributes
 !.gitignore
 
 # Asegurar que no se ignoren los directorios vacíos en los que hay archivos rastreados
