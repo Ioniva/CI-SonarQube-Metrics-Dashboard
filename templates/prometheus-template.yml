@@ -14,5 +14,5 @@ scrape_configs:
     static_configs:
       - targets: ["sonarqube:9000"]
     basic_auth:
-      username: "${PROMETHEUS_USERNAME}"
-      password: "${PROMETHEUS_PASSWORD}"
+      username: "${SONARQUBE_USER}"
+      password: "${SONARQUBE_NEW_PASSWORD}"
