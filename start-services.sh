@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Ejecutar tu script de configuración
+# Run your configuration script
 ./generate_config.sh
 
-# Luego, ejecutar docker-compose up
-docker compose -f "docker-compose.yml" up -d --build 
+# Then, run docker-compose up
+docker compose -f "docker-compose.yml" up -d --build

@@ -1,25 +1,25 @@
 #!/bin/bash
 
-# Define la URL para cambiar la contraseña de SonarQube
+# Define the URL to change the SonarQube password
 SONARQUBE_URL="http://${SONARQUBE_USER}:${SONARQUBE_OLD_PASSWORD}@${SONARQUBE_HOST}:${SONARQUBE_PORT}/api/users/change_password?login=${SONARQUBE_USER}&previousPassword=${SONARQUBE_OLD_PASSWORD}&password=${SONARQUBE_NEW_PASSWORD}"
 
-# Espera 1 minuto antes de ejecutar el comando wget
-echo "Esperando 1 minuto antes de cambiar la contraseña de SonarQube..."
+# Wait for 2 minutes before executing the wget command
+echo "Waiting 2 minutes before changing the SonarQube password..."
 sleep 120
 
-# Ejecuta el comando wget para cambiar la contraseña de SonarQube
+# Execute the wget command to change the SonarQube password
 wget_output=$(wget --post-data='' "$SONARQUBE_URL" -O - 2>&1)
 wget_status=$?
 
-# Verifica si el comando wget fue exitoso
+# Check if the wget command was successful
 if [[ $wget_status -ne 0 ]]; then
-  echo "Error: La contraseña de SonarQube ya ha sido cambiada o hubo un error con wget."
-  echo "wget falló con el estado $wget_status. Salida:"
+  echo "Error: SonarQube password has either already been changed or there was an issue with wget."
+  echo "wget failed with status $wget_status. Output:"
   echo "$wget_output"
 else
-  echo "La contraseña de SonarQube se cambió con éxito."
+  echo "SonarQube password changed successfully."
 fi
 
-# Inicia el servicio de Prometheus
-echo "Iniciando Prometheus..."
+# Start the Prometheus service
+echo "Starting Prometheus..."
 exec prometheus --config.file=/etc/prometheus/prometheus.yml

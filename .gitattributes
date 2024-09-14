@@ -1,9 +1,9 @@
-# Forzar finales de línea LF en todos los archivos de shell scripts y configuraciones
+# Force LF line endings in all shell scripts and configuration files
 *.sh text eol=lf
 *.yml text eol=lf
 *.md text eol=lf
 *.env text eol=lf
 Dockerfile text eol=lf
 
-# Para todos los demás archivos, manejar automáticamente según el SO
+# For all other files, handle automatically according to the OS
 * text=auto

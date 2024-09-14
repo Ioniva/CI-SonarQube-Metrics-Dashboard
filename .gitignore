@@ -1,7 +1,7 @@
-# Ignorar todo por defecto
+# Ignore everything by default
 *
 
-# Excepciones para los archivos y carpetas que quieres rastrear
+# Exceptions for files and directories you want to track
 
 # Jenkins plugin
 !jenkins/
@@ -35,5 +35,5 @@
 !.gitattributes
 !.gitignore
 
-# Asegurar que no se ignoren los directorios vacíos en los que hay archivos rastreados
+# Ensure that empty directories containing tracked files are not ignored
 !*/

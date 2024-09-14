@@ -3,16 +3,16 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
-  # Añadir más configuraciones de scrape aquí para otros servicios o exporters
-  - job_name: 'sonarqube'
+      - targets: ["localhost:9090"]
+  # Add more scrape configurations here for other services or exporters
+  - job_name: "sonarqube"
     scrape_interval: 1m
     scrape_timeout: 30s
-    metrics_path: '/api/prometheus/metrics'
+    metrics_path: "/api/prometheus/metrics"
     static_configs:
-    - targets: ['sonarqube:9000']
+      - targets: ["sonarqube:9000"]
     basic_auth:
-      username: '${PROMETHEUS_USERNAME}'
-      password: '${PROMETHEUS_PASSWORD}'
+      username: "${PROMETHEUS_USERNAME}"
+      password: "${PROMETHEUS_PASSWORD}"
