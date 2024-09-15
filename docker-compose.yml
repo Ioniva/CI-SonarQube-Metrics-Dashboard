@@ -6,6 +6,8 @@ services:
       - "9000:9000" # Map port 9000 on the host to port 9000 in the container (SonarQube UI is accessible on http://localhost:9000).
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true # Disable Elasticsearch bootstrap checks, useful in non-production environments.
+      - SONARQUBE_HOST=${SONARQUBE_HOST}
+      - SONARQUBE_PORT=${SONARQUBE_PORT}
     volumes: # Bind mount host directories to persist SonarQube data and configuration.
       - ./sonarqube/conf:/opt/sonarqube/conf # Map the './sonarqube/conf' directory on the host to the configuration directory inside the container.
       - ./sonarqube/data:/opt/sonarqube/data # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).

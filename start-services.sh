@@ -19,7 +19,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Wait 3 minutes before showing the final message
-sleep 180
+# sleep 180
 
 # Message indicating successful completion
 echo "Configuration and deployment completed successfully."
