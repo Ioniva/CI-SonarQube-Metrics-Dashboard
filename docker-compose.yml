@@ -6,20 +6,17 @@ services:
       - "9000:9000" # Map port 9000 on the host to port 9000 in the container (SonarQube UI is accessible on http://localhost:9000).
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true # Disable Elasticsearch bootstrap checks, useful in non-production environments.
-      - SONARQUBE_HOST=${SONARQUBE_HOST}
-      - SONARQUBE_PORT=${SONARQUBE_PORT}
     volumes: # Bind mount host directories to persist SonarQube data and configuration.
       - ./sonarqube/conf:/opt/sonarqube/conf # Map the './sonarqube/conf' directory on the host to the configuration directory inside the container.
       - ./sonarqube/data:/opt/sonarqube/data # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).
       - ./sonarqube/logs:/opt/sonarqube/logs # Map the './sonarqube/logs' directory on the host to store logs.
       - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
-      - ./sonarqube/check_sonarqube_health.sh:/opt/sonarqube/check_sonarqube_health.sh # Map a custom health check script from the host to the container.
     healthcheck: # Configure a health check for the SonarQube service.
-      test: ["CMD-SHELL", "/bin/bash", "-c", "/opt/sonarqube/check_sonarqube_health.sh"] # Run the custom health check script inside the container.
-      interval: 30s # Run the health check every 30 seconds.
-      timeout: 10s # Consider the check failed if it takes longer than 10 seconds.
-      retries: 10 # Retry up to 10 times before marking the container as unhealthy.
-      start_period: 60s # Wait 60 seconds before starting health checks (allows initialization)
+      test: ["CMD-SHELL", 'wget -qO- http://localhost:9000/api/system/status | grep -q ''"status": *"UP"''']
+      # test: ["CMD-SHELL", "bash sonarqube/check_sonar_status.sh"]
+      interval: 20s
+      retries: 5
+      timeout: 10s
 
   prometheus: # Define a service named 'prometheus' in the Docker Compose configuration.
     image: prom/prometheus # Use the official Prometheus image from Docker Hub.
@@ -30,12 +27,13 @@ services:
       - ./prometheus/data:/prometheus # Store Prometheus data on the host to retain metrics data between restarts.
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Map the Prometheus configuration file from the host to the container.
       - ./prometheus/start_prometheus.sh:/start_prometheus.sh # Map a custom startup script from the host to the container.
+      - ./sonarqube/change_sonar_pass.sh:/change_sonar_pass.sh # Map a custom startup script from the host to the container.
     env_file:
       - ./.env
     depends_on: # Define service dependencies for Prometheus.
       sonarqube: # Specify that Prometheus depends on the 'sonarqube' service.
         condition: service_healthy # Ensure that Prometheus only starts after SonarQube is healthy.
-    entrypoint: ["/bin/sh", "/start_prometheus.sh"] # Override the default entrypoint with a custom script that runs Prometheus.
+    entrypoint: ["/bin/sh", "/start_prometheus.sh"] #Override the default entrypoint with a custom script that runs Prometheus.
 
   grafana: # Define a service named 'grafana' in the Docker Compose configuration.
     image: grafana/grafana # Use the official Grafana image from Docker Hub.
@@ -56,12 +54,11 @@ services:
     volumes: # Bind mount host directories to persist Jenkins data.
       - ./jenkins/data:/var/jenkins_home # Store Jenkins data (jobs, configurations, plugins) on the host for persistence across restarts.
 
-
-  # ngrok: # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
-  #   image: ngrok/ngrok:latest # Use the official Ngrok image with the latest version.
-  #   container_name: ngrok # Name the container 'ngrok' for easy management and identification.
-  #   depends_on: # Define service dependencies for Ngrok.
-  #     - jenkins # Ensure that the 'ngrok' service starts only after Jenkins is running.
-  #   command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout" # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
-  #   volumes: # Bind mount host directories to provide Ngrok configuration files.
-  #     - ./ngrok/config:/ngrok/config # Map the './ngrok/config' directory on the host to the configuration directory inside the container.
+  ngrok: # Define a service named 'ngrok' to create a secure tunnel for Jenkins.
+    image: ngrok/ngrok:latest # Use the official Ngrok image with the latest version.
+    container_name: ngrok # Name the container 'ngrok' for easy management and identification.
+    depends_on: # Define service dependencies for Ngrok.
+      - jenkins # Ensure that the 'ngrok' service starts only after Jenkins is running.
+    command: "start jenkins --config /ngrok/config/ngrok.yml --log stdout" # Run Ngrok to create a tunnel to the Jenkins service using a specific configuration file.
+    volumes: # Bind mount host directories to provide Ngrok configuration files.
+      - ./ngrok/config:/ngrok/config # Map the './ngrok/config' directory on the host to the configuration directory inside the container.

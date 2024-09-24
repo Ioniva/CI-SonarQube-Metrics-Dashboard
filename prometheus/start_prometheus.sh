@@ -3,10 +3,6 @@
 # Define the URL to change the SonarQube password
 SONARQUBE_URL="http://${SONARQUBE_USER}:${SONARQUBE_OLD_PASSWORD}@${SONARQUBE_HOST}:${SONARQUBE_PORT}/api/users/change_password?login=${SONARQUBE_USER}&previousPassword=${SONARQUBE_OLD_PASSWORD}&password=${SONARQUBE_NEW_PASSWORD}"
 
-# Wait for 2 minutes before executing the wget command
-# echo "Waiting 3 minutes before changing the SonarQube password..."
-# sleep 180
-
 # Execute the wget command to change the SonarQube password
 wget_output=$(wget --post-data='' "$SONARQUBE_URL" -O - 2>&1)
 wget_status=$?
