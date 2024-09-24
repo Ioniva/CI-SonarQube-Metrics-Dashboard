@@ -14,7 +14,7 @@ services:
     healthcheck: # Configure a health check for the SonarQube service.
       test: ["CMD-SHELL", 'wget -qO- http://localhost:9000/api/system/status | grep -q ''"status": *"UP"''']
       # test: ["CMD-SHELL", "bash sonarqube/check_sonar_status.sh"]
-      interval: 20s
+      interval: 30s
       retries: 5
       timeout: 10s
 
