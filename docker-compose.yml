@@ -15,7 +15,7 @@ services:
       - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
       - ./sonarqube/check_sonar_status.sh:/opt/sonarqube/check_sonar_status.sh
     healthcheck: # Configure a health check for the SonarQube service.
-      test: ["CMD-SHELL", "/bin/bash", "/opt/sonarqube/check_sonar_status.sh"]
+      test: ["CMD-SHELL", "/opt/sonarqube/check_sonar_status.sh"]
       interval: 30s
       retries: 5
       timeout: 10s
