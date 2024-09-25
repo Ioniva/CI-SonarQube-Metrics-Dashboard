@@ -13,7 +13,7 @@ services:
       - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
     healthcheck: # Configure a health check for the SonarQube service.
       # test: ["CMD-SHELL", 'wget -qO- http://localhost:9000/api/system/status | grep -q ''"status": *"UP"''']
-      test: ["CMD-SHELL", "/bin/bash", "./sonarqube/check_sonar_status.sh"]
+      test: ["CMD-SHELL", "/bin/bash", "/sonarqube/check_sonar_status.sh"]
       interval: 30s
       retries: 5
       timeout: 10s
@@ -27,7 +27,7 @@ services:
       - ./prometheus/data:/prometheus # Store Prometheus data on the host to retain metrics data between restarts.
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Map the Prometheus configuration file from the host to the container.
       - ./prometheus/start_prometheus.sh:/start_prometheus.sh # Map a custom startup script from the host to the container.
-      - ./sonarqube/change_sonar_pass.sh:/change_sonar_pass.sh # Map a custom startup script from the host to the container.
+      # - ./sonarqube/change_sonar_pass.sh:/change_sonar_pass.sh # Map a custom startup script from the host to the container.
     env_file:
       - ./.env
     depends_on: # Define service dependencies for Prometheus.
