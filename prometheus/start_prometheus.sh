@@ -9,15 +9,14 @@ wget_status=$?
 
 # Check if the wget command was successful
 if [[ $wget_status -ne 0 ]]; then
-  echo "Error: SonarQube password has either already been changed or there was an issue with wget."
+  echo "❌ Error: SonarQube password has either already been changed or there was an issue with wget."
+  echo "  Possible reason: The new password might be the same as the previous password."
   echo "wget failed with status $wget_status. Output:"
   echo "$wget_output"
-
-  exit 1
 else
-  echo "SonarQube password changed successfully."
+  echo "✅ SonarQube password changed successfully."
 fi
 
 # Start the Prometheus service
-echo "Starting Prometheus..."
+echo "🚀 Starting Prometheus..."
 exec prometheus --config.file=/etc/prometheus/prometheus.yml
