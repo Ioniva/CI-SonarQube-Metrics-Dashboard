@@ -5,7 +5,13 @@
 
 # Check if the configuration script ran successfully
 if [ $? -ne 0 ]; then
-  echo "Error: The configuration script did not run successfully."
+  echo "❌ Error: The configuration script did not run successfully."
+  exit 1
+fi
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Error: Docker is not running. Please check that Docker is started."
   exit 1
 fi
 
@@ -14,12 +20,9 @@ docker compose -f "docker-compose.yml" up -d --build
 
 # Check if docker-compose up ran successfully
 if [ $? -ne 0 ]; then
-  echo "Error: docker-compose up did not run successfully."
+  echo "❌ Error: docker-compose up did not run successfully."
   exit 1
 fi
 
-# Wait 3 minutes before showing the final message
-# sleep 180
-
 # Message indicating successful completion
-echo "Configuration and deployment completed successfully."
+echo "✅ Configuration and deployment completed successfully."

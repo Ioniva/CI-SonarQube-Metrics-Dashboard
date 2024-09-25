@@ -5,15 +5,17 @@ services:
     ports:
       - "9000:9000" # Map port 9000 on the host to port 9000 in the container (SonarQube UI is accessible on http://localhost:9000).
     environment:
+      - SONARQUBE_HOST=${SONARQUBE_HOST}
+      - SONARQUBE_PORT=${SONARQUBE_PORT}
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true # Disable Elasticsearch bootstrap checks, useful in non-production environments.
     volumes: # Bind mount host directories to persist SonarQube data and configuration.
       - ./sonarqube/conf:/opt/sonarqube/conf # Map the './sonarqube/conf' directory on the host to the configuration directory inside the container.
       - ./sonarqube/data:/opt/sonarqube/data # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).
       - ./sonarqube/logs:/opt/sonarqube/logs # Map the './sonarqube/logs' directory on the host to store logs.
       - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
+      - ./sonarqube/check_sonar_status.sh:/opt/sonarqube/check_sonar_status.sh
     healthcheck: # Configure a health check for the SonarQube service.
-      # test: ["CMD-SHELL", 'wget -qO- http://localhost:9000/api/system/status | grep -q ''"status": *"UP"''']
-      test: ["CMD-SHELL", "/bin/bash", "./sonarqube/check_sonar_status.sh"]
+      test: ["CMD-SHELL", "/bin/bash", "/opt/sonarqube/check_sonar_status.sh"]
       interval: 30s
       retries: 5
       timeout: 10s
@@ -23,17 +25,20 @@ services:
     container_name: prometheus # Name the container 'prometheus' for easier management and identification.
     ports:
       - "9090:9090" # Map port 9090 on the host to port 9090 in the container (Prometheus web UI accessible on http://localhost:9090).
+    environment:
+      - SONARQUBE_HOST=${SONARQUBE_HOST}
+      - SONARQUBE_USER=${SONARQUBE_USER}
+      - SONARQUBE_OLD_PASSWORD=${SONARQUBE_OLD_PASSWORD}
+      - SONARQUBE_NEW_PASSWORD=${SONARQUBE_NEW_PASSWORD}
+      - SONARQUBE_PORT=${SONARQUBE_PORT}
     volumes: # Bind mount host directories to persist Prometheus data and configuration.
       - ./prometheus/data:/prometheus # Store Prometheus data on the host to retain metrics data between restarts.
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Map the Prometheus configuration file from the host to the container.
-      - ./prometheus/start_prometheus.sh:/start_prometheus.sh # Map a custom startup script from the host to the container.
-      # - ./sonarqube/change_sonar_pass.sh:/change_sonar_pass.sh # Map a custom startup script from the host to the container.
-    env_file:
-      - ./.env
+      - ./prometheus/start_prometheus.sh:/etc/prometheus/start_prometheus.sh # Map a custom startup script from the host to the container.
     depends_on: # Define service dependencies for Prometheus.
       sonarqube: # Specify that Prometheus depends on the 'sonarqube' service.
         condition: service_healthy # Ensure that Prometheus only starts after SonarQube is healthy.
-    entrypoint: ["/bin/sh", "/start_prometheus.sh"] #Override the default entrypoint with a custom script that runs Prometheus.
+    entrypoint: ["/bin/sh", "/etc/prometheus/start_prometheus.sh"] #Override the default entrypoint with a custom script that runs Prometheus.
 
   grafana: # Define a service named 'grafana' in the Docker Compose configuration.
     image: grafana/grafana # Use the official Grafana image from Docker Hub.
