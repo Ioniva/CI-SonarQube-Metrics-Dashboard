@@ -18,7 +18,7 @@
 !sonarqube/extensions/
 !sonarqube/extensions/plugins/
 !sonarqube/extensions/plugins/sonar-prometheus-exporter-1.0.0-SNAPSHOT.jar
-!sonarqube/check_sonarqube_health.sh
+!sonarqube/check_sonar_status.sh
 
 # Template files
 !templates/
