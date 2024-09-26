@@ -13,9 +13,9 @@ services:
       - ./sonarqube/data:/opt/sonarqube/data # Map the './sonarqube/data' directory on the host to store data (e.g., project scans).
       - ./sonarqube/logs:/opt/sonarqube/logs # Map the './sonarqube/logs' directory on the host to store logs.
       - ./sonarqube/extensions:/opt/sonarqube/extensions # Map the './sonarqube/extensions' directory on the host to manage plugins and custom extensions.
-      - ./sonarqube/check_sonar_status.sh:/opt/sonarqube/check_sonar_status.sh
+      - ./sonarqube/check_sonar_status.sh:/check_sonar_status.sh
     healthcheck: # Configure a health check for the SonarQube service.
-      test: ["CMD-SHELL", "/opt/sonarqube/check_sonar_status.sh"]
+      test: ["CMD-SHELL", "/check_sonar_status.sh"]
       interval: 30s
       retries: 5
       timeout: 10s
