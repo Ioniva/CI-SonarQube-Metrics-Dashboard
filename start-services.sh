@@ -57,7 +57,7 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 # Run docker-compose up
-echo "\n 🚀 Starting Docker services..."
+echo "🚀 Starting Docker services..."
 docker compose -f "docker-compose.yml" up -d --build
 
 # Check if docker-compose up ran successfully
@@ -70,7 +70,7 @@ fi
 # Get the list of all services defined in the docker-compose.yml
 ALL_SERVICES=$(docker compose -f "docker-compose.yml" config --services)
 
-echo -e "\n🔄 Checking the status of services..."
+echo -e "🔄 Checking the status of services..."
 
 # Function to check if a service is in the skip list
 skip_service() {
