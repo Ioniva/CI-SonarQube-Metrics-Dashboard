@@ -27,7 +27,7 @@
 
 # Docker environment and essential files
 !.env
-!readme.md
+!/readme.md
 !config_mappings.config
 !generate_config.sh
 !docker-compose.yml
